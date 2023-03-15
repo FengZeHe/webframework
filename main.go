@@ -1,38 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"github.com/webframework/gee"
 	"net/http"
 )
 
-type Engine struct{}
-
 func main() {
-	engine := new(Engine)
-	log.Fatalln(http.ListenAndServe(":8081", engine))
-}
+	r := gee.New()
+	r.GET("/", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "<h1>hello world</h1>")
+	})
 
-func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	switch req.URL.Path {
-	case "/":
-		fmt.Fprintf(w, "URL.Path = %q \n", req.URL.Path)
-	case "/hello":
-		for k, v := range req.Header {
-			fmt.Fprintf(w, "Header[%q] = %q \n", k, v)
-		}
-	default:
-		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
-
-	}
-}
-
-func indexHandler(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
-}
-
-func helloHandler(w http.ResponseWriter, req *http.Request) {
-	for k, v := range req.Header {
-		fmt.Fprintf(w, "Hander[%q] = %q\n", k, v)
-	}
+	r.POST("/hello", func(c *gee.Context) {
+		c.JSON(http.StatusOK, gee.H{
+			"username": c.PostForm("username"),
+			"password": c.PostForm("password"),
+		})
+	})
+	r.Run(":8081")
 }
