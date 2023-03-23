@@ -17,5 +17,9 @@ func main() {
 			"password": c.PostForm("password"),
 		})
 	})
+
+	r.GET("/home/:name", func(c *gee.Context) {
+		c.String(http.StatusOK, "hello %s", c.Param("name"))
+	})
 	r.Run(":8081")
 }
