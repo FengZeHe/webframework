@@ -55,5 +55,10 @@ func main() {
 		})
 	})
 
+	r.GET("/panic", func(c *gee.Context) {
+		name := []string{"shit"}
+		c.String(http.StatusOK, name[100])
+	})
+
 	r.Run(":8081")
 }
