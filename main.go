@@ -2,8 +2,18 @@ package main
 
 import (
 	"github.com/webframework/gee"
+	"log"
 	"net/http"
+	"time"
 )
+
+func onlyforV2() gee.HandlerFunc {
+	return func(c *gee.Context) {
+		t := time.Now()
+		c.Fail(500, "Internal Server Error")
+		log.Printf("[%d] %s in %v for group v2 \n", c.StatusCode, c.Req.RequestURI, time.Since(t))
+	}
+}
 
 func main() {
 	r := gee.New()
@@ -20,6 +30,7 @@ func main() {
 	}
 
 	v2 := r.Group("/v2")
+	v2.Use(onlyforV2())
 	{
 		v2.GET("/hello/:name", func(c *gee.Context) {
 			c.String(http.StatusOK, "hello %s ,you are at %s \n", c.Param("name"), c.Path)
